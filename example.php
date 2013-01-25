@@ -1,20 +1,8 @@
-PHP MySQLi wrapper
-==================
+<?php
 
-Introduction
-------------
-
-This is a PHP wrapper that is meant to use the MySQLi class and generate simple statement in the background. It is non persistant (you connect and disconnect when you're finished).
-
-Example use
------------
-
-Creating the constructor:
+	require("class.DBEngine.php");
 
 	$db = new DBEngine("root", "password", "database");
-
-Selecting some data from a table:
-
 	// The following will create and execute the statement select * from users where username = test and password = pass
 	$db->select("users", array(
 					"username" => "test",
@@ -28,9 +16,16 @@ Selecting some data from a table:
 	// Echo the array holding the last result of a select statement
 	var_dump($db->result);
 
-Deleting data from a table:
+	// The following will create and execute the statement insert into users(username, password) values('kolo3', 'lol)
+	$db->insert("users", array("username" => "kolo3", "password" => "lol", "code" => "lol"));
+
+	// The following will create and execute the statement update users set password = "kolo3" where username = kolo3
+	$db->update("users", array("password" => "kolo3"), array("username" => "kolo3"));
 
 	// The following will create and execute the statement delete from users where username = "KOL"
 	$db->delete("users", array("username" => "KOL"), 'and', true);
 
-The rest is in the comments of the class itself and the example file.
+	// Execute a custom statement
+	$db->custom_stmt("select * from users where username = ?", array("don"), true);
+
+?>
