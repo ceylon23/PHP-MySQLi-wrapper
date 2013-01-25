@@ -71,7 +71,7 @@ Documentation
 	
 	// Array of last select statement
 
-**Insert statement documentation**
+**Insert statement**
 
 	/**
 	 * 
