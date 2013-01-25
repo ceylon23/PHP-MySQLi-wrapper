@@ -1,2 +1,2 @@
-DBEngine
-========
+PHP MySQLi wrapper
+==================
