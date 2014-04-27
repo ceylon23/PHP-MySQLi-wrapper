@@ -23,6 +23,7 @@ class DBEngine {
 	private $last_error;
 	private $result;
 	private $last_count;
+	private $insert_id;
 	
 	/**
 	 * 
@@ -195,6 +196,7 @@ class DBEngine {
 			
 			$stmt->execute();
 			$this->last_count = $this->connection->affected_rows;
+			$this->insert_id = $this->connection->insert_id;
 			$this->report_error();
 			$stmt->free_result();
 			$stmt->close();
@@ -516,6 +518,15 @@ class DBEngine {
 	 */
 	public function get_last_error() {
 		return $this->last_error;
+	}
+	
+	/**
+	 *
+	 * Returns insert id
+	 * @return string
+	 */
+	public function get_insert_id() {
+		return $this->insert_id;
 	}
 	
 	/**
