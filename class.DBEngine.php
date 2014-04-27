@@ -114,18 +114,22 @@ class DBEngine {
 			if(strlen($limit) > 0) {
 				$query .= " limit {$limit}";
 			}
-	
-			$bind_string = $this->get_bind_string($where);
-			$bind_parameters = $this->get_bind_parameters($where);
-	
-			$stmt = $this->connection->prepare($query);
-			$merge = array_merge($bind_string, $bind_parameters);
 			
-			$ref_array = array();
-			foreach($merge as $key => $value) {
-				$ref_array[$key] = &$merge[$key];
+			if(is_array($where)) {
+				$bind_string = $this->get_bind_string($where);
+				$bind_parameters = $this->get_bind_parameters($where);
+	
+				$stmt = $this->connection->prepare($query);
+				$merge = array_merge($bind_string, $bind_parameters);
+			
+				$ref_array = array();
+				foreach($merge as $key => $value) {
+					$ref_array[$key] = &$merge[$key];
+				}
+				call_user_func_array(array($stmt, 'bind_param'), $ref_array);
+			} else {
+				$stmt = $this->connection->prepare($query);
 			}
-			call_user_func_array(array($stmt, 'bind_param'), $ref_array);
 			
 			$stmt->execute();
 			$results = $this->get_array($stmt);
@@ -353,24 +357,28 @@ class DBEngine {
 	 * @param boolean $select If type of query is select statement, set to true, default is false
 	 * 
 	 */
-	public function custom_stmt($query, $parameters, $select=false) {
+	public function custom_stmt($query, $parameters='', $select=false) {
 		
 		$results = null;
 		
 		if($this->established) {
-
-			$bind_string = $this->get_bind_string($parameters);
-			$bind_parameters = $this->get_bind_parameters($parameters);
 			
-			$stmt = $this->connection->prepare($query);
-			$merge = array_merge($bind_string, $bind_parameters);
+			if (is_array($parameters)){
+				$bind_string = $this->get_bind_string($parameters);
+				$bind_parameters = $this->get_bind_parameters($parameters);
+			
+				$stmt = $this->connection->prepare($query);
+				$merge = array_merge($bind_string, $bind_parameters);
 				
-			$ref_array = array();
-			foreach($merge as $key => $value) {
-				$ref_array[$key] = &$merge[$key];
+				$ref_array = array();
+				foreach($merge as $key => $value) {
+					$ref_array[$key] = &$merge[$key];
+				}
+				call_user_func_array(array($stmt, 'bind_param'), $ref_array);
+			} else {
+				$stmt = $this->connection->prepare($query);
 			}
-			call_user_func_array(array($stmt, 'bind_param'), $ref_array);
-				
+			
 			$stmt->execute();
 			if($select) {
 				$this->result = $this->get_array($stmt);
